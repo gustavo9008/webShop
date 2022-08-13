@@ -21,7 +21,7 @@ export default function Item(props) {
   const [item, setItem] = React.useState(null)
 
 
-  // console.log(item);
+  console.log(item);
 
   const getItem = async (queryParams) => {
     // const urlId = router.query;
