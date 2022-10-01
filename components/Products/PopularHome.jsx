@@ -43,13 +43,12 @@ export default function PopularHome(props) {
 
     const items = await axiosFetch("/api/getproducts", data);
     if (items.statusText === "OK") {
-      console.log(items);
       setHomeProducts(items.data);
     }
   };
 
   React.useEffect(() => {
-    getProducts(3);
+    getProducts(5);
   }, []);
   return (
     <>

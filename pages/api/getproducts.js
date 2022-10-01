@@ -2,41 +2,46 @@
 import { axiosFetch } from "@/utils/axiosFetch";
 
 export default async function handler(req, res) {
-    // console.log(req.body.type);
     const gql = String.raw;
     const SHOPIFY_TOKEN = process.env.SHOPIFY_TOKEN;
     const SHOPIFY_URL = process.env.SHOPIFY_URL;
     let url = SHOPIFY_URL;
     let headers = { 'X-Shopify-Storefront-Access-Token': SHOPIFY_TOKEN };
-    let variables = {}
 
 
-
-
+    const variables = req.body.variables
     const query = req.body.query
 
     let data = {
         query,
         variables
     }
-    // const fetch = axiosFetch;
-
     const shopifyRes = await axiosFetch(url, data, headers);
-    // console.log("data", shopifyRes.data);
+    if (shopifyRes.status !== 200) {
+        res.status(400).json({ "error": "Something went Wrong, please try again later." });
+        res.end();
+        return;
+    }
     var productData;
 
     async function singleItemTransform(data) {
-        let product = data.data.product
-        console.log(product.variants.nodes[0].selectedOptions);
-
+        let product = data.data.product;
+        //===== nested map method. need too rework it =====
         let options = product.options.map((option) => {
             if (option.name !== "Color") return;
             let name = option.values.map((color) => {
 
                 let name = color
+                let itemQuantity = product.variants.nodes.filter((variant) => variant.selectedOptions[0].value === name).map((values) => {
 
-                console.log(name);
-                let itemQuantity = product.variants.nodes.filter((variant) => variant.selectedOptions[0].value === name)
+
+                    return {
+                        id: values.id,
+                        quantity: values.quantityAvailable,
+                        color: values.selectedOptions[0]?.value,
+                        size: values.selectedOptions[1]?.value,
+                    };
+                })
 
 
                 return {
@@ -45,8 +50,6 @@ export default async function handler(req, res) {
 
                 }
             });
-
-            console.log(name);
             // let fullOption = { opti: name.map(op => { return { op }; }) }
 
             return name;
@@ -74,9 +77,6 @@ export default async function handler(req, res) {
             options: options,
 
         }
-
-        // console.log(productData);
-
         res.status(200).json(productData)
 
         // productData = shopifyRes.data.data;
@@ -101,6 +101,80 @@ export default async function handler(req, res) {
 
     }
 
+    async function getCart() {
+        let cart;
+
+        if (shopifyRes.data.data.cart === null) {
+            cart = {
+                cartId: null
+            }
+
+        }
+
+        if (shopifyRes.data.data.cart !== null) {
+            if (req.body.subType === "GET_LOAD_CART" && shopifyRes.data.data.cart != null) {
+                cart = {
+                    cartId: await shopifyRes.data.data.cart.id,
+                    cartUrl: await shopifyRes.data.data.cart.checkoutUrl,
+                    cartQuantity: await shopifyRes.data.data.cart.totalQuantity,
+                }
+            }
+
+            if (req.body.subType === "GET_CART_ID") {
+                cart = {
+                    cartId: await shopifyRes.data.data.cartCreate.cart.id,
+                    cartUrl: await shopifyRes.data.data.cartCreate.cart.checkoutUrl,
+                    cartQuantity: await shopifyRes.data.data.cartCreate.cart.totalQuantity,
+                }
+            }
+
+            if (req.body.subType === "LOAD_CART") {
+                cart = {
+                    cartId: shopifyRes.data.data.cart.id,
+                    cartUrl: shopifyRes.data.data.cart.checkoutUrl,
+                    cartQuantity: shopifyRes.data.data.cart.totalQuantity,
+                    estimatedCost: shopifyRes.data.data.cart.cost,
+                    cartItems: shopifyRes.data.data.cart.lines.nodes,
+                }
+            }
+        }
+
+
+        res.status(200).json(cart)
+
+    }
+
+    async function addToCart() {
+
+        let updatedCart = {
+            cartQuantity: shopifyRes.data.data.cartLinesAdd.cart.totalQuantity,
+            estimatedCost: shopifyRes.data.data.cartLinesAdd.cart.cost,
+            cartItems: shopifyRes.data.data.cartLinesAdd.cart.lines.nodes
+        }
+        // res.status(200).json(shopifyRes.data);
+        res.status(200).json(updatedCart);
+
+    }
+
+    async function updateShoppingCart() {
+        let cartData = {
+            cartQuantity: shopifyRes.data.data.cartLinesUpdate.cart.totalQuantity,
+            estimatedCost: shopifyRes.data.data.cartLinesUpdate.cart.cost,
+            cartItems: shopifyRes.data.data.cartLinesUpdate.cart.lines.nodes
+        }
+        res.status(200).json(cartData);
+
+    }
+
+    async function deleteItemCart() {
+        let cartData = {
+            cartQuantity: shopifyRes.data.data.cartLinesRemove.cart.totalQuantity,
+            estimatedCost: shopifyRes.data.data.cartLinesRemove.cart.cost,
+            cartItems: shopifyRes.data.data.cartLinesRemove.cart.lines.nodes
+        }
+        res.status(200).json(cartData);
+    }
+
 
     switch (req.body.type) {
         case "SINGLE_PRODUCT":
@@ -109,6 +183,22 @@ export default async function handler(req, res) {
             break;
         case "MULTIPLE_PRODUCTS":
             await multlipleItemsTransform();
+            res.end();
+            break;
+        case "GET_CART":
+            await getCart();
+            res.end();
+            break;
+        case "ADD_TO_CART":
+            await addToCart();
+            res.end();
+            break;
+        case "UPDATE_CART":
+            await updateShoppingCart();
+            res.end();
+            break;
+        case "DELETE_ITEM_CART":
+            await deleteItemCart();
             res.end();
             break;
 

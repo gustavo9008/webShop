@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function axiosFetch(url, data, headers) {
+export async function axiosFetch(url, data, headers = null) {
 
     const config = {
         url: url,

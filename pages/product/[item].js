@@ -20,16 +20,7 @@ export default function Item(props) {
   const [loading, setLoading] = React.useState(true);
   const [item, setItem] = React.useState(null)
 
-
-  console.log(item);
-
   const getItem = async (queryParams) => {
-    // const urlId = router.query;
-    // console.log(urlId.id);
-
-    // let queryId = queryParams.split('/product/');
-    // console.log(queryParams);
-
 
     const gql = String.raw;
 
@@ -71,7 +62,6 @@ export default function Item(props) {
    }
   
 }`;
-    // console.log(query);
 
     let data = {
       type: "SINGLE_PRODUCT",
@@ -79,14 +69,12 @@ export default function Item(props) {
     };
     const item = await axiosFetch("/api/getproducts", data);
     if (item.status === 200) {
-      // console.log(item);
       setItem(item.data)
     }
   }
 
   React.useEffect(() => {
     let queryParams = new URL(document.location.href).searchParams.get("id");
-    // console.log(queryParams);
     item !== null && (queryParams !== item.id.split("gid://shopify/Product/")[1]) && getItem(queryParams)
     item === null && getItem(queryParams)
   }, [item]);

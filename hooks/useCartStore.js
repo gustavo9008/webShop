@@ -1,10 +1,40 @@
 import create from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { axiosFetch } from "@/utils/axiosFetch.js";
+
 
 const useCartStore = create((set) => ({
-    cart: 3,
-    addItems: () => set((state) => ({ cart: state.cart + 1 })),
-    removeItems: () => set({ cart: 0 }),
+    cartId: null,
+    cartURL: null,
+    estimatedCost: {
+        subtotalAmount: {
+            amount: 0.00
+        },
+        totalAmount: {
+            amount: 0.00
+        },
+        totalTaxAmount: {
+            amount: 0.00
+        },
+    },
+    cartQuantity: null,
+    cartItems: null,
+    addCart: async (newCart) => {
+        let updateCartItems = newCart?.cartItems;
+        set((state) => ({
+            cartId: newCart.cartId ? newCart.cartId : state.cartId, cartURL: newCart.cartUrl ? newCart.cartUrl : state.cartURL, estimatedCost: newCart?.estimatedCost ? newCart.estimatedCost : state.estimatedCost, cartItems: newCart?.cartItems ? updateCartItems : state.cartItems, cartQuantity: newCart.cartQuantity ? newCart.cartQuantity : state.cartQuantity,
+        }))
+    },
+    addCardId: (newId) => set((state) => ({
+        cartId: newId,
+    })),
+    addCartURL: (newUrl) => set((state) => ({
+        cartURL: newUrl
+    })),
+    removeItems: () => set({ cartQuantity: 0 }),
+    addToCart: async (item) => {
+        const res = await axiosFetch()
+    },
 }));
 const useItemState = create((set) => ({
     item: null,
