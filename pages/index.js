@@ -20,7 +20,7 @@ export default function Home(props) {
 
       <main className={`${styles.mainPageHero}`}>
 
-        <section className='max-w-[800px] m-auto'>
+        <section className='max-w-[900px] m-auto'>
           <Hero />
 
         </section>

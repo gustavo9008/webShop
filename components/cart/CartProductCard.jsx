@@ -204,11 +204,11 @@ const CartCart = (props) => {
   }
 
   return (
-    <li className="flex justify-between mb-2 p-4 max-w-lg text-white">
+    <li className="flex Psm:flex-col justify-between mb-2 p-4 Psm:w-full max-w-lg text-white">
       <main className="flex">
-        <div className="w-[200px] mr-2">
+        <div className="w-[150px] mr-2">
           <div className="grid grid-rows-1 justify-items-stretch">
-            <figure className="aspect-w-4 aspect-h-3 mb-2">
+            <figure className="aspect-w-4 aspect-h-5 mb-2">
               <Image
                 className="object-cover"
                 src={props.item.merchandise.image.url}
@@ -239,33 +239,13 @@ const CartCart = (props) => {
         </section>
       </main>
 
-      <aside className="flex flex-col justify-between">
-        {/* <select
-          onChange={async (e) => {
-            console.log(e.target.value);
-            console.log(cartId);
-            let mutation = {
-              cartId: cartId,
-              lines: {
-                id: props.item.id,
-                merchandiseId: props.item.merchandise.id,
-                quantity: Number(e.target.value),
-              },
-            };
-            console.log(mutation);
-
-            await updateCart(mutation);
-          }}
-          className="text-black appearance-none block text-sm font-normal bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-          name="quantity-select"
-          id="qSelect"
-        >
-          {options}
-        </select> */}
-
+      <aside className="flex Psm:flex-row flex-col justify-between Psm:justify-end">
         <SelectOption />
         {/* //===== delete btn ===== */}
-        <span onClick={deleteItem} className="block cursor-pointer">
+        <span
+          onClick={deleteItem}
+          className="ml-20 relative top-[5px] block cursor-pointer"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

@@ -86,7 +86,7 @@ export default function Cart(props) {
   }, [cartId]);
 
   return (
-    <section className="flex justify-between">
+    <section className="flex justify-between Psm:flex-col">
       <ul className="divide-y divide-solid divide-gray-500">
         <h1 className="text-4xl text-center mb-4 text-white">Shopping Cart</h1>
 
