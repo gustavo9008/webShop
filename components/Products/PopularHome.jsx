@@ -42,7 +42,7 @@ export default function PopularHome(props) {
     };
 
     const items = await axiosFetch("/api/getproducts", data);
-    if (items.statusText === "OK") {
+    if (items.status === 200) {
       setHomeProducts(items.data);
     }
   };
