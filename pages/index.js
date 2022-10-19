@@ -18,7 +18,7 @@ export default function Home(props) {
 
 
 
-      <main className={`${styles.mainPageHero}`}>
+      <main className={`${styles.mainPageHero} pb-[25px] h-[fit-content]`}>
 
         <section className='max-w-[900px] m-auto'>
           <Hero />

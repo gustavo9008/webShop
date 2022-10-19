@@ -6,13 +6,31 @@ import { axiosFetch } from "@/utils/axiosFetch";
 export default function SingleItem(props) {
   // const cartQuantity = useCartStore((state) => state.cartQuantity);
   // const cartItems = useCartStore((state) => state.cartItems);
+  const [isPending, startTransition] = React.useTransition();
   const cartId = useCartStore((state) => state.cartId);
   const addCart = useCartStore((state) => state.addCart);
+  const [btnState, setBtnState] = React.useState(true);
+  const [btnColor, setBtnColor] = React.useState("bg-gray-900");
+  //===== state right below is for checking if size option is available on the item, if 0 than no size option is available =====
+  const [itemSizeOption] = React.useState(
+    props.item.variant.filter((opAv) => opAv.name === "Size").length
+  );
+  //=====  =====
   const [selectedItem, setSelectedItem] = React.useState({
     id: null,
     color: null,
     size: null,
   });
+
+  // console.log(props.item.variant.filter((opAv) => opAv.name === "Size").length);
+  // //===== check for option availble =====
+  // if (props.item.variant.filter((opAv) => opAv.name === "Size").length === 0) {
+  //   console.log(
+  //     props.item.variant.filter((opAv) => opAv.name === "Size").length
+  //   );
+
+  //   setSelectedItem(false);
+  // }
   let preRenderColor = [
     "bg-yellow-500",
     "bg-red-500",
@@ -26,6 +44,24 @@ export default function SingleItem(props) {
     "bg-pink-500",
   ];
   const gql = String.raw;
+
+  function enableBtnCheck() {
+    console.log(isPending);
+    console.log("btn Chekc");
+    console.log(itemSizeOption);
+    console.log(selectedItem);
+    if (itemSizeOption !== 0) {
+      console.log("id and color is not null");
+      setBtnState(false);
+      setBtnColor("bg-blue-500");
+    }
+
+    if (itemSizeOption === 0) {
+      console.log("item has no size option");
+      setBtnState(false);
+      setBtnColor("bg-blue-500");
+    }
+  }
 
   // notes: need to refactored
   const selectOption = (option, sizeColor, type) => {
@@ -53,14 +89,20 @@ export default function SingleItem(props) {
         }
       }
     }
+
+    // if()
     if (option.color) {
       checkSize();
     }
 
-    setSelectedItem((prev) => ({
-      ...prev,
-      ...newOptions,
-    }));
+    startTransition(() => {
+      setSelectedItem((prev) => ({
+        ...prev,
+        ...newOptions,
+      }));
+    });
+
+    // isPending === false && enableBtnCheck();
   };
 
   const addToCart = async () => {
@@ -131,10 +173,18 @@ export default function SingleItem(props) {
     }
   };
 
+  React.useEffect(() => {
+    console.log(selectedItem);
+    if (selectedItem.id !== null && selectedItem.color !== null) {
+      // console.log("id and color is not null");
+      enableBtnCheck();
+    }
+  }, [selectedItem]);
+
   return (
-    <header className="p-4 bg-white dark:bg-gray-800 max-w-[900px] m-auto">
+    <header className="p-4 Psm:p-2 bg-white dark:bg-gray-800 max-w-[900px] m-auto">
       <div className="flex Psm:flex-col-reverse flex-row-reverse">
-        <div className="flex items-center justify-center w-full px-6 py-8 lg:w-1/2">
+        <div className="flex items-center justify-center w-full px-6 py-8 Psm:px-0 lg:w-1/2">
           <div className="max-w-xl">
             <h2 className="text-3xl font-semibold text-gray-800 dark:text-white mb-4">
               <span className="text-blue-600 dark:text-blue-400">
@@ -142,6 +192,7 @@ export default function SingleItem(props) {
               </span>
             </h2>
             <div>
+              {/* price section */}
               <p className="block w-12 p-2 text-white text-xl font-semibold text-center">
                 {Intl.NumberFormat("en-US", {
                   style: "currency",
@@ -151,26 +202,10 @@ export default function SingleItem(props) {
               </p>
 
               <div className="text-white">
+                {/* color options */}
                 <h5>COLOR: {selectedItem.color}</h5>
-                <div className="grid grid-cols-3 gap-4 mt-4 mb-4">
-                  {/* {props.item !== null &&
-                    props.item.options.map((color, i) => {
-                      let colorVal = color.name.split("/");
-
-                      return (
-                        <ColorSelect
-                          key={i}
-                          selectOption={selectOption}
-                          colorName={colorVal[0].toLowerCase()}
-                          styles={
-                            selectedItem.color === colorVal[0].toLowerCase() &&
-                            "ring-white ring-offset-black ring ring-offset-4"
-                          }
-                          colorBtn={colorVal[1]}
-                        />
-                      );
-                    })} */}
-                  {/* color buttons */}
+                <div className="flex justify-start pl-6 gap-6 py-4 flex-wrap">
+                  {/* color option func */}
                   {props.item !== null &&
                     props.item.options?.map((size, i) => {
                       // nested map finds size available for each color
@@ -217,10 +252,11 @@ export default function SingleItem(props) {
                 </div>
               </div>
               <div className="text-white">
-                {props.item.variant.filter((opAv) => opAv.name === "Size")
-                  .length > 0 && <h5>Size: </h5>}
-
-                <div className="grid grid-cols-3 gap-4">
+                {/* filter check if size option is available */}
+                {itemSizeOption === 1 && <h5 className="pb-4">Size: </h5>}
+                {/* //=====  ===== */}
+                <div className="flex gap-4 flex-wrap justify-center">
+                  {/* //===== load initial size option func, this does not include ids, is simply for loading the size options ===== */}
                   {selectedItem.color === null &&
                     props.item.variant.filter((opAv) => opAv.name === "Size")
                       .length > 0 &&
@@ -235,14 +271,15 @@ export default function SingleItem(props) {
                             e.preventDefault();
                             selectOption({ size: size });
                           }}
-                          className={`${selectColor} cursor-pointer px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform  rounded-md hover:bg-blue-500 focus:outline-none`}
+                          className={`${selectColor} cursor-pointer px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform  rounded-md hover:bg-blue-500 focus:outline-none basis-28`}
                           key={i}
                         >
                           {size}
                         </button>
                       );
                     })}
-
+                  {/* //=====  ===== */}
+                  {/* //===== function for chooosing size with ids, loads when user clicks a color in the option of colors ===== */}
                   {selectedItem.color !== null &&
                     props.item.variant.filter((opAv) => opAv.name === "Size")
                       .length > 0 &&
@@ -273,7 +310,7 @@ export default function SingleItem(props) {
                                 "CHANGE_SIZE"
                               );
                             }}
-                            className={`${selectColor} cursor-pointer px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform  rounded-md hover:bg-blue-500 focus:outline-none`}
+                            className={`${selectColor} cursor-pointer px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform  rounded-md hover:bg-blue-500 focus:outline-none basis-28`}
                             key={i}
                           >
                             {sizeOption.size}
@@ -293,9 +330,10 @@ export default function SingleItem(props) {
 
             <div className="flex flex-col mt-6 space-y-3 lg:space-y-0 lg:flex-row">
               <button
+                disabled={btnState}
                 onClick={addToCart}
                 href="#"
-                className="block px-3 py-2 text-sm font-semibold text-center text-white transition-colors duration-200 transform bg-gray-900 rounded-md hover:bg-gray-700"
+                className={`${btnColor} block px-3 py-2 text-sm font-semibold text-center text-white transition-colors duration-200 transform  rounded-md`}
               >
                 Add to cart
               </button>
@@ -303,7 +341,7 @@ export default function SingleItem(props) {
           </div>
         </div>
 
-        <div className="">
+        <div className="max-w-[50%] Psm:max-w-[100%]">
           <div className="w-full h-full bg-cover">
             <div className="w-full h-full bg-white">
               <picture className="w-full">
