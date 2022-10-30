@@ -83,6 +83,17 @@ const CartCart = (props) => {
       mutation { cartLinesUpdate(cartId: "${mutation.cartId}" lines: {id: "${mutation.lines.id}", quantity: ${mutation.lines.quantity}}) {
           cart {
             totalQuantity
+            cost {
+              subtotalAmount {
+                amount
+              }
+              totalAmount {
+                amount
+              }
+              totalTaxAmount {
+                amount
+              }
+            }
             estimatedCost {
               totalAmount {
                 amount
@@ -146,6 +157,17 @@ const CartCart = (props) => {
         cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
           cart {
             totalQuantity
+            cost {
+              subtotalAmount {
+                amount
+              }
+              totalAmount {
+                amount
+              }
+              totalTaxAmount {
+                amount
+              }
+            }
             estimatedCost {
               totalAmount {
                 amount
@@ -199,8 +221,6 @@ const CartCart = (props) => {
     if (res.status === 200) {
       addCart(res.data);
     }
-
-    // console.log(res);
   }
 
   return (

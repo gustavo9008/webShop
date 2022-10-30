@@ -2,21 +2,22 @@ import Link from "next/link";
 import React from "react";
 import { useCartStore } from "../../hooks/useCartStore";
 import { axiosFetch } from "@/utils/axiosFetch.js";
-import { useDetectOutsideClick } from "@/hooks/useDetectClick";
-import styles from "../../styles/Home.module.css";
+// import { useDetectOutsideClick } from "@/hooks/useDetectClick";
+// import styles from "../../styles/Home.module.css";
 
 const Navbar = () => {
-  const [isPending, startTransition] = React.useTransition();
-  const dropdownRef = React.useRef(null);
-  const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
-
-  const cartId = useCartStore((state) => state.cartId);
-  const cartUrl = useCartStore((state) => state.cartURL);
-  const estimatedCost = useCartStore((state) => state.estimatedCost);
-  // const cartQuantity = useCartStore((state) => state.cartQuantity);
+  //===== commented code below was for dropdown menu, decided not to use dropdown menu =====
+  // const [isPending, startTransition] = React.useTransition();
+  // const dropdownRef = React.useRef(null);
+  // const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
+  //=====  =====
+  // const cartId = useCartStore((state) => state.cartId);
+  // const cartUrl = useCartStore((state) => state.cartURL);
+  // const estimatedCost = useCartStore((state) => state.estimatedCost);
+  const animateCart = useCartStore((state) => state.animateCart);
   const cartQuantity = useCartStore((state) => state.cartQuantity);
   const addCart = useCartStore((state) => state.addCart);
-  const addCartUrl = useCartStore((state) => state.addCartURL);
+  // const addCartUrl = useCartStore((state) => state.addCartURL);
   const gql = String.raw;
 
   // const query = gql`
@@ -37,11 +38,11 @@ const Navbar = () => {
   //   const items = await axiosFetch("/api/getproducts", data);
   //   console.log(items);
   // }
-  const toggleMenu = () => {
-    startTransition(() => {
-      setIsActive(!isActive);
-    });
-  };
+  // const toggleMenu = () => {
+  //   startTransition(() => {
+  //     setIsActive(!isActive);
+  //   });
+  // };
   React.useEffect(() => {
     var localCartData = JSON.parse(window.localStorage.getItem("shopifyCart"));
 
@@ -123,11 +124,11 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav>
+    <nav className="fixed top-0 z-50 bg-gray-600 w-full">
       <div className="max-w-[1000px] px-6 py-3 mx-auto relative">
         <div className="flex items-center justify-between">
           {/* <!-- Mobile menu button --> */}
-          <div onClick={toggleMenu} className="flex">
+          {/* <div onClick={toggleMenu} className="flex">
             <button
               type="button"
               className="text-gray-500 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none focus:text-gray-600 dark:focus:text-gray-400"
@@ -140,7 +141,7 @@ const Navbar = () => {
                 ></path>
               </svg>
             </button>
-          </div>
+          </div> */}
           <div>
             <Link href="/">
               <a className="text-2xl font-bold text-gray-800 dark:text-white lg:text-3xl hover:text-gray-700 dark:hover:text-gray-300">
@@ -148,7 +149,24 @@ const Navbar = () => {
               </a>
             </Link>
           </div>
-          <div className="flex justify-center lg:block">
+          <div className="flex justify-center w-14">
+            {cartQuantity !== null && (
+              <span className="flex h-3 w-3 bottom-1 -left-1 mr-4 relative">
+                <span
+                  className={`${
+                    animateCart && "animate-bounce animate-ping"
+                  } inline-flex absolute h-7 w-7 rounded-full bg-sky-400 opacity-75`}
+                ></span>
+                <span
+                  className={`${
+                    animateCart && "animate-bounce"
+                  } absolute  h-7 w-7 p-1 text-sm text-white bg-blue-500 rounded-full text-center`}
+                >
+                  {cartQuantity}
+                </span>
+              </span>
+            )}
+
             <Link href={"/cart"}>
               <a className="relative text-gray-700 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300">
                 <svg
@@ -165,17 +183,13 @@ const Navbar = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-
-                <span className="absolute top-0 -left-4 p-1 text-xs text-white bg-blue-500 rounded-full">
-                  {cartQuantity}
-                </span>
               </a>
             </Link>
           </div>
         </div>
 
-        {/* <!-- Mobile Menu open: "block", Menu closed: "hidden" --> */}
-        <div
+        {/* <!--  Menu open: "block", Menu closed: "hidden" --> */}
+        {/* <div
           ref={dropdownRef}
           className={`${
             isActive ? "active" : "inactive"
@@ -232,7 +246,7 @@ const Navbar = () => {
               </a>
             </Link>
           </div> */}
-        </div>
+        {/* </div> */}
       </div>
     </nav>
   );

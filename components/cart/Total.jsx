@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 
 export default function Total(props) {
-  // console.log(props);
+  // console.log(props.cartTotal);
   return (
     <section className="text-xl bg-gray-600 w-[250px] Psm:m-auto Psm:w-full text-white h-5/6 p-4 rounded-md mt-14">
       <h3>Order Summary</h3>

@@ -75,9 +75,11 @@ export default function Cart(props) {
       };
 
       const res = await axiosFetch("/api/getproducts", data);
+      // console.log(res.data);
 
       if (res.status === 200) {
-        await addCart(res.data);
+        res.data.estimatedCost.totalTaxAmount !== null &&
+          (await addCart(res.data));
       }
     }
     if (cartId !== null) {

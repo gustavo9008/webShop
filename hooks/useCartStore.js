@@ -19,6 +19,7 @@ const useCartStore = create((set) => ({
     },
     cartQuantity: null,
     cartItems: null,
+    animateCart: false,
     addCart: async (newCart) => {
         let updateCartItems = newCart?.cartItems;
         set((state) => ({
@@ -32,8 +33,8 @@ const useCartStore = create((set) => ({
         cartURL: newUrl
     })),
     removeItems: () => set({ cartQuantity: 0 }),
-    addToCart: async (item) => {
-        const res = await axiosFetch()
+    setAnimateCart: async (bool) => {
+        set((state) => ({ animateCart: bool }))
     },
 }));
 const useItemState = create((set) => ({

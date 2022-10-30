@@ -102,6 +102,7 @@ export default async function handler(req, res) {
     }
 
     async function getCart() {
+        // console.log("getting cart......");
         let cart;
 
         if (shopifyRes.data.data.cart === null) {
@@ -157,6 +158,7 @@ export default async function handler(req, res) {
     }
 
     async function updateShoppingCart() {
+        // console.log(shopifyRes.data.data.cartLinesUpdate.cart.cost);
         let cartData = {
             cartQuantity: shopifyRes.data.data.cartLinesUpdate.cart.totalQuantity,
             estimatedCost: shopifyRes.data.data.cartLinesUpdate.cart.cost,

@@ -5,7 +5,7 @@ import { axiosFetch } from "@/utils/axiosFetch";
 
 export default function SingleItem(props) {
   // const cartQuantity = useCartStore((state) => state.cartQuantity);
-  // const cartItems = useCartStore((state) => state.cartItems);
+  const setAnimateCart = useCartStore((state) => state.setAnimateCart);
   const [isPending, startTransition] = React.useTransition();
   const cartId = useCartStore((state) => state.cartId);
   const addCart = useCartStore((state) => state.addCart);
@@ -46,18 +46,12 @@ export default function SingleItem(props) {
   const gql = String.raw;
 
   function enableBtnCheck() {
-    console.log(isPending);
-    console.log("btn Chekc");
-    console.log(itemSizeOption);
-    console.log(selectedItem);
     if (itemSizeOption !== 0) {
-      console.log("id and color is not null");
       setBtnState(false);
       setBtnColor("bg-blue-500");
     }
 
     if (itemSizeOption === 0) {
-      console.log("item has no size option");
       setBtnState(false);
       setBtnColor("bg-blue-500");
     }
@@ -170,11 +164,26 @@ export default function SingleItem(props) {
     // };
     if (res.status === 200) {
       addCart(res.data);
+      setAnimateCart(true);
+      setSelectedItem({
+        id: null,
+        color: null,
+        size: null,
+      });
+
+      startTransition(() => {
+        setBtnState(true);
+        setBtnColor("bg-gray-900");
+      });
+      // setBtnState(true);
+      // setBtnColor("bg-gray-900");
+      setTimeout(() => {
+        setAnimateCart(false);
+      }, 5000);
     }
   };
 
   React.useEffect(() => {
-    console.log(selectedItem);
     if (selectedItem.id !== null && selectedItem.color !== null) {
       // console.log("id and color is not null");
       enableBtnCheck();
@@ -333,7 +342,7 @@ export default function SingleItem(props) {
                 disabled={btnState}
                 onClick={addToCart}
                 href="#"
-                className={`${btnColor} block px-3 py-2 text-sm font-semibold text-center text-white transition-colors duration-200 transform  rounded-md`}
+                className={`${btnColor} block px-3 py-3 font-semibold text-center text-white transition-colors duration-200 transform  rounded-md`}
               >
                 Add to cart
               </button>
