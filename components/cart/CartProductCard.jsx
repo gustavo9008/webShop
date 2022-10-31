@@ -4,8 +4,12 @@ import { useCartStore } from "../../hooks/useCartStore";
 import { axiosFetch } from "@/utils/axiosFetch";
 
 const CartCart = (props) => {
+  const setAnimateCart = useCartStore((state) => state.setAnimateCart);
   const cartId = useCartStore((state) => state.cartId);
   const addCart = useCartStore((state) => state.addCart);
+  const [containerHeight, setContainerHeight] = React.useState(null);
+  const [containerWidth, setContainerWidth] = React.useState(null);
+  const parentRef = React.useRef();
   const gql = String.raw;
 
   const sizeColor = props?.item.merchandise.title.split("/");
@@ -36,6 +40,8 @@ const CartCart = (props) => {
       <select
         defaultValue={dValue}
         onChange={async (e) => {
+          setContainerHeight(parentRef.current.clientHeight);
+          setContainerWidth(parentRef.current.clientWidth);
           let mutation = {
             cartId: cartId,
             lines: {
@@ -76,6 +82,13 @@ const CartCart = (props) => {
   //   //   </option>
   //   // );
   //   console.log(options);
+
+  function checkSize() {
+    setContainerHeight(parentRef.current.clientHeight);
+    setContainerWidth(parentRef.current.clientWidth);
+    console.log(parentRef.current.clientWidth);
+    console.log(parentRef.current.clientHeight);
+  }
   // }
 
   async function updateCart(mutation) {
@@ -142,7 +155,13 @@ const CartCart = (props) => {
 
     const res = await axiosFetch("/api/getproducts", data);
     if (res.status === 200) {
+      setAnimateCart(true);
       addCart(res.data);
+      setContainerHeight(null);
+      setContainerWidth(null);
+      setTimeout(() => {
+        setAnimateCart(false);
+      }, 5000);
     }
   }
 
@@ -224,7 +243,10 @@ const CartCart = (props) => {
   }
 
   return (
-    <li className="flex Psm:flex-col justify-between mb-2 p-4 Psm:w-full max-w-lg text-white">
+    <li
+      ref={parentRef}
+      className="flex Psm:flex-col justify-between mb-2 p-4 Psm:w-full max-w-lg text-white relative"
+    >
       <main className="flex">
         <div className="w-[150px] mr-2">
           <div className="grid grid-rows-1 justify-items-stretch">
@@ -281,7 +303,18 @@ const CartCart = (props) => {
             />
           </svg>
         </span>
+        {/* //===== test size width btn ===== */}
+        <span>
+          <button onClick={checkSize}>check size</button>
+        </span>
       </aside>
+      <div
+        className="absolute bg-black bg-opacity-20 outline-none focus:outline-none top-0 left-0 rounded-md"
+        style={{
+          height: containerHeight,
+          width: containerWidth,
+        }}
+      ></div>
     </li>
   );
 };

@@ -124,7 +124,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="fixed top-0 z-50 bg-gray-600 w-full">
+    <nav className="fixed top-0 z-50 bg-[#3c4043] border-b border-black w-full">
       <div className="max-w-[1000px] px-6 py-3 mx-auto relative">
         <div className="flex items-center justify-between">
           {/* <!-- Mobile menu button --> */}
