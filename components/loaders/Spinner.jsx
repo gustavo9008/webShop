@@ -2,12 +2,11 @@ import React from "react";
 
 function Spinner(props) {
   return (
-    <div className={`mt-10 flex flex-row justify-center`}>
+    <div className={`flex flex-row justify-center`}>
       {" "}
       <svg
-        className="-ml-1 mr-3 h-20 w-20 animate-spin dark:text-white"
+        className="h-14 w-14 animate-spin dark:text-white"
         viewBox="0 0 24 24"
-        style={{ display: "block" }}
       >
         <circle
           className="opacity-10 dark:opacity-25"

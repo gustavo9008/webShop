@@ -140,7 +140,9 @@ export default function SingleItem(props) {
                       url
                     }
                     product {
+                      id
                       title
+                      handle
                     }
                   }
                 }
@@ -352,7 +354,7 @@ export default function SingleItem(props) {
 
         <div className="max-w-[50%] Psm:max-w-[100%]">
           <div className="w-full h-full bg-cover">
-            <div className="w-full h-full bg-white">
+            <div className="w-full h-full">
               <picture className="w-full">
                 <img
                   className="m-auto object-cover"

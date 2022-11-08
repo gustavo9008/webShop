@@ -82,7 +82,7 @@ export default function Item(props) {
   return (
 
     <>
-      <p>single item</p>
+
 
       {item !== null && (
         <section className='bg-white dark:bg-gray-800 '>

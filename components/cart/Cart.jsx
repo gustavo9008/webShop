@@ -57,7 +57,9 @@ export default function Cart(props) {
                       url
                     }
                     product {
+                      id
                       title
+                      handle
                     }
                   }
                 }

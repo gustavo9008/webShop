@@ -1,7 +1,9 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCartStore } from "../../hooks/useCartStore";
 import { axiosFetch } from "@/utils/axiosFetch";
+import Spinner from "../loaders/Spinner";
 
 const CartCart = (props) => {
   const setAnimateCart = useCartStore((state) => state.setAnimateCart);
@@ -9,10 +11,18 @@ const CartCart = (props) => {
   const addCart = useCartStore((state) => state.addCart);
   const [containerHeight, setContainerHeight] = React.useState(null);
   const [containerWidth, setContainerWidth] = React.useState(null);
+  const [containerDisplay, setContainerDisplay] = React.useState("none");
   const parentRef = React.useRef();
   const gql = String.raw;
 
   const sizeColor = props?.item.merchandise.title.split("/");
+  // console.log(
+  //   props.item.merchandise.product.title
+  //     .replace(/[^a-zA-z0-9]\s/g, " ")
+  //     .replace(/\s\s+/g, "-")
+  //     .replace(/[ ]/g, "-")
+  //     .toLowerCase()
+  // );
 
   const SelectOption = () => {
     // const [selectedValue, setSelectedValue] = React.useState(null);
@@ -42,6 +52,8 @@ const CartCart = (props) => {
         onChange={async (e) => {
           setContainerHeight(parentRef.current.clientHeight);
           setContainerWidth(parentRef.current.clientWidth);
+          setContainerDisplay("grid");
+
           let mutation = {
             cartId: cartId,
             lines: {
@@ -83,12 +95,13 @@ const CartCart = (props) => {
   //   // );
   //   console.log(options);
 
-  function checkSize() {
-    setContainerHeight(parentRef.current.clientHeight);
-    setContainerWidth(parentRef.current.clientWidth);
-    console.log(parentRef.current.clientWidth);
-    console.log(parentRef.current.clientHeight);
-  }
+  // function checkSize() {
+  //   setContainerHeight(parentRef.current.clientHeight);
+  //   setContainerWidth(parentRef.current.clientWidth);
+  //   setContainerDisplay("grid");
+  //   console.log(parentRef.current.clientWidth);
+  //   console.log(parentRef.current.clientHeight);
+  // }
   // }
 
   async function updateCart(mutation) {
@@ -132,7 +145,9 @@ const CartCart = (props) => {
                       url
                     }
                     product {
+                      id
                       title
+                      handle
                     }
                   }
                 }
@@ -159,6 +174,7 @@ const CartCart = (props) => {
       addCart(res.data);
       setContainerHeight(null);
       setContainerWidth(null);
+      setContainerDisplay("none");
       setTimeout(() => {
         setAnimateCart(false);
       }, 5000);
@@ -166,6 +182,9 @@ const CartCart = (props) => {
   }
 
   async function deleteItem() {
+    setContainerHeight(parentRef.current.clientHeight);
+    setContainerWidth(parentRef.current.clientWidth);
+    setContainerDisplay("grid");
     const itemToDelete = {
       id: props.item.id,
       merchandiseId: props.item.merchandise.id,
@@ -212,7 +231,9 @@ const CartCart = (props) => {
                       url
                     }
                     product {
+                      id
                       title
+                      handle
                     }
                   }
                 }
@@ -238,14 +259,22 @@ const CartCart = (props) => {
 
     const res = await axiosFetch("/api/getproducts", data);
     if (res.status === 200) {
+      setAnimateCart(true);
+
       addCart(res.data);
+      setContainerHeight(null);
+      setContainerWidth(null);
+      setContainerDisplay("none");
+      setTimeout(() => {
+        setAnimateCart(false);
+      }, 5000);
     }
   }
 
   return (
     <li
       ref={parentRef}
-      className="flex Psm:flex-col justify-between mb-2 p-4 Psm:w-full max-w-lg text-white relative"
+      className={`${"fadein"} flex Psm:flex-col justify-between mb-2 p-4 Psm:w-full max-w-lg text-white relative`}
     >
       <main className="flex">
         <div className="w-[150px] mr-2">
@@ -266,7 +295,18 @@ const CartCart = (props) => {
 
         <section>
           <p className="w-[200px] mb-2">
-            {props.item.merchandise.product.title}
+            <Link
+              href={`/product/${props.item.merchandise.product.handle}?id=${
+                props.item.merchandise.product.id.split(
+                  "gid://shopify/Product/"
+                )[1]
+              }`}
+            >
+              <a className="hover:text-blue-400 font-semibold">
+                {" "}
+                {props.item.merchandise.product.title}{" "}
+              </a>
+            </Link>
           </p>
           <span className="block mb-2">
             {sizeColor[0]} | {sizeColor[2]}
@@ -281,7 +321,7 @@ const CartCart = (props) => {
         </section>
       </main>
 
-      <aside className="flex Psm:flex-row flex-col justify-between Psm:justify-end">
+      <aside className="flex Psm:flex-row flex-col justify-between Psm:justify-end px-2.5">
         <SelectOption />
         {/* //===== delete btn ===== */}
         <span
@@ -304,17 +344,21 @@ const CartCart = (props) => {
           </svg>
         </span>
         {/* //===== test size width btn ===== */}
-        <span>
+        {/* <span>
           <button onClick={checkSize}>check size</button>
-        </span>
+        </span> */}
       </aside>
       <div
-        className="absolute bg-black bg-opacity-20 outline-none focus:outline-none top-0 left-0 rounded-md"
+        className="absolute bg-black bg-opacity-20 outline-none focus:outline-none top-0 left-0 rounded-md place-items-center"
         style={{
           height: containerHeight,
           width: containerWidth,
+          display: containerDisplay,
         }}
-      ></div>
+      >
+        {" "}
+        <Spinner />
+      </div>
     </li>
   );
 };

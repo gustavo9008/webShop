@@ -130,6 +130,7 @@ export default async function handler(req, res) {
             }
 
             if (req.body.subType === "LOAD_CART") {
+                // console.log(shopifyRes.data.data.cart);
                 cart = {
                     cartId: shopifyRes.data.data.cart.id,
                     cartUrl: shopifyRes.data.data.cart.checkoutUrl,

@@ -48,7 +48,7 @@ export default function PopularHome(props) {
   };
 
   React.useEffect(() => {
-    getProducts(5);
+    getProducts(6);
   }, []);
   return (
     <>
