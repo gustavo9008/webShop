@@ -29,7 +29,7 @@ export default function Hero() {
           <div className="flex items-center justify-center w-full mt-6">
             <p className="mt-2 text-gray-900 font-bold bg-gray-200 text-center p-4 rounded-md">
               CHECKOUT PROCESS IS DISABLED. You can go through the checkout form
-              proccess but it wont allow you to place order.
+              proccess but it will not allow you to place order.
             </p>
             {/* <img
               className="w-full h-full lg:max-w-2xl"

@@ -367,7 +367,7 @@ export default function SingleItem(props) {
         </div>
       </div>
 
-      <h4>Detail:</h4>
+      <h4 className="text-white">Detail:</h4>
       <p className="mt-2 text-xl text-gray-500 dark:text-gray-400">
         {props.item.description}
       </p>
